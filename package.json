@@ -1,6 +1,6 @@
 {
   "name": "naive-ts-code-quality-check",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "naive typescript code quality checker",
   "main": "lib/index.js",
   "bin": {

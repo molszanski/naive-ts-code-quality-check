@@ -3,6 +3,7 @@
 Checks ts and tsx fils
 
 ```bash
+> npx naive-ts-code-quality-check -p project/folder/src
 > naive-ts-code-check -p project/folder/src
 
 ---------- Result ------------
