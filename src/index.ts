@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import path from "path"
 import util from "util"
 import shell from "shelljs"
@@ -21,11 +20,9 @@ const argv: any = yargs(process.argv.slice(2))
   .help("h")
   .alias("h", "help").argv
 
-/// yargs will terminate node if path is missing
 const pathArg = argv.path ?? "src"
 const pathToProcess = path.resolve(process.cwd(), pathArg)
 const shouldShowDetails = argv.details === true
-// console.log("Processing folder: ", pathToProcess)
 
 interface ErrStats {
   [index: string]: { name: string; errOccurance: number }
@@ -34,7 +31,7 @@ interface ErrStats {
 function execFind(grep: string) {
   return `find ${pathArg} -type f -iname "*.ts*" -print0 | xargs -0 grep -c "${grep}"`
 }
-console.log("test")
+
 const greps = {
   tsIgnore: execFind("@ts-ignore"),
   any: execFind(": any"),
@@ -59,11 +56,12 @@ async function getParsedLines(grepLine: string): Promise<ErrStats> {
 
 export async function doWork() {
   try {
+    const star = new TsErrorStats()
+
     const tsIgnoreLines = await getParsedLines(greps.tsIgnore)
     const anyLines = await getParsedLines(greps.any)
     const asAny = await getParsedLines(greps.asAny)
     const orUndef = await getParsedLines(greps.orUndefind)
-    const star = new TsErrorStats()
 
     star.updateErrType(tsIgnoreLines, "tsIgnore")
     star.updateErrType(anyLines, "any")
