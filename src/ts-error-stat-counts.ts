@@ -38,7 +38,7 @@ export class TsErrorStats {
     [index: string]: ErrFileStats
   }
 
-  constructor(private slocStats: SLOCResponse) {
+  constructor(private slocStats: SLOCResponse, private title: string) {
     this.fileStats = {}
   }
 
@@ -130,7 +130,11 @@ export class TsErrorStats {
 
   public printSummary() {
     const summ = this.countSummary()
-    console.log("\n---------- Summary ------------\n")
+    if (this.title !== "") {
+      console.log(`\n---------- ${this.title} Summary ------------\n`)
+    } else {
+      console.log(`\n---------- Summary ------------\n`)
+    }
 
     var t = table(
       [
@@ -142,7 +146,7 @@ export class TsErrorStats {
     )
     console.log(t)
 
-    console.log("\n------------------------------")
+    console.log("\n" + "-".repeat(32 + this.title.length))
   }
 
   public printIssueDetails() {

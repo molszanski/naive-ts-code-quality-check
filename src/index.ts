@@ -14,6 +14,8 @@ const argv: any = yargs(process.argv.slice(2))
   .alias("v", "version")
   .alias("p", "path")
   .describe("p", "path to analyze")
+  .alias("t", "title")
+  .describe("t", "Title name to use")
   .alias("d", "details")
   .describe("d", "report stats of each analyzed file")
   // .demandOption(["p"])
@@ -21,6 +23,7 @@ const argv: any = yargs(process.argv.slice(2))
   .alias("h", "help").argv
 
 const pathArg = argv.path ?? "src"
+const projectTitle = argv.title ?? ""
 const pathToProcess = path.resolve(process.cwd(), pathArg)
 const shouldShowDetails = argv.details === true
 
@@ -60,7 +63,7 @@ export async function doWork() {
       `npx sloc --format=json ${pathToProcess}`,
       { silent: true },
     )
-    const star = new TsErrorStats(JSON.parse(slocStats))
+    const star = new TsErrorStats(JSON.parse(slocStats), projectTitle)
 
     const tsIgnoreLines = await getParsedLines(greps.tsIgnore)
     const anyLines = await getParsedLines(greps.any)
