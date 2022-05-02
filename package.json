@@ -1,6 +1,6 @@
 {
   "name": "naive-ts-code-quality-check",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "naive typescript code quality checker",
   "main": "lib/index.js",
   "bin": {
@@ -20,6 +20,7 @@
     "installGlobal": "yarn build && yarn global add \"file:$PWD\""
   },
   "dependencies": {
+    "debug": "^4.3.4",
     "easy-table": "^1.2.0",
     "shelljs": "^0.8.5",
     "sloc": "^0.2.1",

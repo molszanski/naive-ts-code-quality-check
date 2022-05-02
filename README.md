@@ -35,4 +35,7 @@ nodemon src/index.ts
 # check cli
 yarn build && node ./lib/index.js -p src/test
 yarn build && node ./lib/index.js -p src/test --details
+
+# profile
+yarn build && DEBUG="*"  node lib/index.js
 ```
