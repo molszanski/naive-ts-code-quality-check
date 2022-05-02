@@ -56,7 +56,11 @@ async function getParsedLines(grepLine: string): Promise<ErrStats> {
 
 export async function doWork() {
   try {
-    const star = new TsErrorStats()
+    const slocStats = await asyncShell(
+      `npx sloc --format=json ${pathToProcess}`,
+      { silent: true },
+    )
+    const star = new TsErrorStats(JSON.parse(slocStats))
 
     const tsIgnoreLines = await getParsedLines(greps.tsIgnore)
     const anyLines = await getParsedLines(greps.any)
@@ -68,7 +72,7 @@ export async function doWork() {
     star.updateErrType(asAny, "asAny")
     star.updateErrType(orUndef, "orUndefined")
 
-    star.printStats({ details: shouldShowDetails })
+    star.printStats2({ details: shouldShowDetails })
   } catch (e) {
     console.log("something is wrong")
     console.log("path might not be correct")

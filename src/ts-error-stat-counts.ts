@@ -1,4 +1,6 @@
 import _ from "lodash"
+import { SLOCResponse } from "./sloc.types"
+var EasyTable = require("easy-table")
 var table = require("text-table")
 
 interface ErrStats {
@@ -30,11 +32,13 @@ type Entries<T> = {
 function ObjectEntries<T>(obj: T): Entries<T> {
   return Object.entries(obj) as any
 }
-
+const fmt = (n: number) => Math.round(n * 100 * 100) / 100
 export class TsErrorStats {
-  public fileStats: { [index: string]: ErrFileStats }
+  public fileStats: {
+    [index: string]: ErrFileStats
+  }
 
-  constructor() {
+  constructor(private slocStats: SLOCResponse) {
     this.fileStats = {}
   }
 
@@ -70,6 +74,24 @@ export class TsErrorStats {
     return ttl
   }
 
+  public countSummary() {
+    const totals = this.countTotal()
+    const summary = {
+      sloc: this.slocStats.summary.source,
+      allIssues: 0,
+      issuesPerSloc: 0,
+    }
+
+    for (const [errName] of ObjectEntries(ErrorRuntimeConfig)) {
+      summary.allIssues += totals[errName]
+    }
+    summary.issuesPerSloc = fmt(summary.allIssues / summary.sloc)
+
+    // summary.sloc =  1
+
+    return summary
+  }
+
   public printStats(opts: { details?: boolean }) {
     const ttl = this.countTotal()
     console.log("\n---------- Result ------------\n")
@@ -94,6 +116,54 @@ export class TsErrorStats {
     if (opts.details) {
       console.table(this.fileStats)
     }
+  }
+
+  public printStats2(opts: { details?: boolean }) {
+    // SUMMARY PRINT
+    this.printSummary()
+    this.printIssueDetails()
+
+    if (opts.details) {
+      console.table(this.fileStats)
+    }
+  }
+
+  public printSummary() {
+    const summ = this.countSummary()
+    console.log("\n---------- Summary ------------\n")
+
+    var t = table(
+      [
+        ["  All Issues ", summ.allIssues],
+        ["  Issues Per Line ", summ.issuesPerSloc.toString() + " %"],
+        ["  SLOC ", summ.sloc],
+      ],
+      { align: ["r", "l"], hsep: ": " },
+    )
+    console.log(t)
+
+    console.log("\n------------------------------")
+  }
+
+  public printIssueDetails() {
+    const ttl = this.countTotal()
+    console.log("\n")
+
+    const sloc = this.slocStats.summary.source
+    var t = new EasyTable()
+    for (const [errName] of ObjectEntries(ErrorRuntimeConfig)) {
+      const occ = ttl[errName]
+      const files = ttl[errName]
+      const perSloc = fmt(occ / sloc)
+
+      t.cell("Name", errName)
+      t.cell("Occurance", occ)
+      t.cell("Files", files)
+      t.cell("Per Souce Line of Code %", perSloc.toString() + " %")
+
+      t.newRow()
+    }
+    console.log(t.toString())
   }
 
   private getEntry(fPath: string): ErrFileStats {
