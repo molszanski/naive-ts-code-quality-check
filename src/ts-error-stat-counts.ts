@@ -32,7 +32,7 @@ type Entries<T> = {
 function ObjectEntries<T>(obj: T): Entries<T> {
   return Object.entries(obj) as any
 }
-const fmt = (n: number) => Math.round(n * 100 * 100) / 100
+const fmt = (n: number) => Math.round(n * 1000 * 100) / 1000
 export class TsErrorStats {
   public fileStats: {
     [index: string]: ErrFileStats
